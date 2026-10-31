@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Copart Brasil | Leilao de Veiculos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', Arial, sans-serif; }
+  body { background: #fff; color: #333; }
+  .top-bar { background: #f8f9fa; border-bottom: 1px solid #ddd; padding: 8px 0; font-size: 12px; color: #666; text-align: right; font-weight: 500;}
+  .top-bar span { margin-left: 15px; cursor: pointer; }
+  
+  header { background: rgba(255, 255, 255, 0.98); padding: 15px 50px; display: flex; align-items: center; justify-content: space-between; gap: 30px; border-bottom: 1px solid #e0e0e0; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.03); backdrop-filter: blur(10px); }
+  .logo { font-size: 38px; font-weight: 900; color: #003366; font-style: italic; letter-spacing: -2px; cursor: pointer; }
+  .logo span { color: #0066cc; }
+  
+  .busca-wrap { flex: 1; max-width: 800px; display: flex; border: 2px solid #e0e0e0; border-radius: 40px; overflow: hidden; background: #f8f9fa; transition: all 0.3s; }
+  .busca-wrap:hover, .busca-wrap:focus-within { border-color: #0066cc; background: #fff; box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1); }
+  .busca-wrap input { flex: 1; padding: 16px 25px; border: none; font-size: 15px; outline: none; background: transparent; font-weight: 500; }
+  .busca-wrap button { padding: 0 40px; background: #ffc107; color: #003366; border: none; font-weight: 900; font-size: 15px; cursor: pointer; transition: background 0.3s; }
+  .busca-wrap button:hover { background: #ffb300; }
+  
+  .btn-registrar { background: transparent; color: #003366; padding: 12px 25px; border: 2px solid #003366; border-radius: 30px; font-weight: 700; cursor: pointer; font-size: 14px; transition: 0.3s; }
+  .btn-registrar:hover { background: #f0f2f5; }
+  .btn-entrar { background: #003366; color: #fff; padding: 12px 25px; border: 2px solid #003366; border-radius: 30px; font-weight: 700; cursor: pointer; font-size: 14px; transition: 0.3s; }
+  .btn-entrar:hover { background: #00509e; border-color: #00509e; }
+  
+  .menu-escuro { background: #1a1a1a; padding: 0 40px; display: flex; border-bottom: 2px solid #000; overflow-x: auto; position: relative; z-index: 99;}
+  .menu-item { color: #fff; text-decoration: none; padding: 15px 18px; font-size: 12px; font-weight: 700; text-transform: uppercase; cursor: pointer; white-space: nowrap; letter-spacing: 0.5px;}
+  .menu-item:hover, .menu-item.ativo { background: #333; color: #ffc107; }
+  .banner-aviso { background: #e67e00; color: #fff; text-align: center; padding: 10px; font-size: 14px; font-weight: 600; position: relative; }
+  .banner-aviso span { text-decoration: underline; cursor: pointer; }
+  .banner-aviso .btn-fechar { position: absolute; right: 20px; top: 10px; cursor: pointer; font-weight: bold; font-size: 18px;}
+  
+  .tela { display: none; }
+  .tela.ativa { display: block; animation: fadeIn .3s; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  
+    .hero { position: relative; height: 85vh; min-height: 650px; display: flex; align-items: center; justify-content: space-between; padding: 0 60px; overflow: hidden; background: #000; }
+  .hero::before { 
+    content: ''; position: absolute; inset: 0; 
+    background: linear-gradient(90deg, rgba(0, 15, 30, 0.95) 0%, rgba(0, 15, 30, 0.7) 50%, rgba(0, 15, 30, 0.4) 100%), 
+                url('https://images.unsplash.com/photo-1592838064575-70ed626d3a0e?q=80&w=2500&auto=format&fit=crop') center center / cover;
+    z-index: 1;
+  }
+  .hero-texto { position: relative; z-index: 2; max-width: 650px; animation: fadeSlideUp 0.8s ease-out; }
+  .hero h1 { font-size: 62px; font-weight: 300; line-height: 1.05; margin-bottom: 25px; letter-spacing: -1px; color: #fff;}
+  .hero h1 b { font-weight: 900; }
+  .hero h1 .laranja { color: #ff8c00; font-weight: 900; }
+  .hero p { font-size: 20px; line-height: 1.6; color: #d0d0d0; font-weight: 400; }
+  .hero p b { color: #fff; font-weight: 700; }
+  .hero-cards { position: relative; z-index: 2; display: flex; gap: 25px; animation: fadeSlideUp 0.8s ease-out 0.2s both; }
+  .hero-card { background: rgba(0, 26, 51, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px; padding: 35px; width: 320px; transition: transform 0.3s, box-shadow 0.3s; }
+  .hero-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.4); border-color: rgba(255, 255, 255, 0.3); }
+  .hero-card h3 { color: #ff8c00; font-size: 24px; margin-bottom: 20px; font-weight: 900; letter-spacing: -0.5px; }
+  .hero-card ul { list-style: none; color: #fff; font-size: 14px; margin-bottom: 25px; line-height: 1.8; font-weight: 400;}
+  .hero-card li { margin-bottom: 10px; display: flex; align-items: center; }
+  .hero-card li::before { content: '\2713'; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; background: #28a745; color: #fff; border-radius: 50%; font-size: 10px; margin-right: 12px; }
+  .hero-card-botoes { display: flex; gap: 12px; }
+  .hero-card-botoes button { flex: 1; padding: 14px; background: #ffc107; color: #003366; border: none; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.5px;}
+  .hero-card-botoes button:hover { background: #fff; transform: scale(1.05); }
+  @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+  .container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; min-height: 500px; }
+  .secao-titulo { color: #003366; font-size: 32px; font-weight: 300; margin-bottom: 25px; letter-spacing: -0.5px;}
+  .secao-titulo b { font-weight: 900; }
+  
+  .layout-busca { display: grid; grid-template-columns: 280px 1fr; gap: 30px; max-width: 1400px; margin: 0 auto; padding: 30px 20px; }
+  .sidebar { background: #f8f9fa; border: 1px solid #ddd; border-radius: 8px; height: fit-content; }
+  .sidebar-header { padding: 15px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
+  .sidebar-header h2 { font-size: 16px; color: #333; font-weight: 700;}
+  .btn-limpar { background: transparent; border: none; color: #0066cc; font-size: 12px; cursor: pointer; text-decoration: underline; font-weight: 600;}
+  .filtro-grupo { border-bottom: 1px solid #ddd; padding: 15px; }
+  .filtro-grupo:last-child { border-bottom: none; }
+  .filtro-grupo h3 { font-size: 13px; color: #333; margin-bottom: 10px; text-transform: uppercase; font-weight: 700;}
+  .filtro-opcao { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 13px; color: #555; cursor: pointer; font-weight: 500;}
+  .filtro-opcao .count { margin-left: auto; color: #999; font-size: 11px; }
+  .busca-topo { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
+  .busca-topo h2 { font-size: 20px; color: #003366; font-weight: 700;}
+  .busca-topo select { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; outline: none; font-family: 'Montserrat';}
+
+  .grid-carros { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+  .card-carro { background: #fff; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; transition: .3s; cursor: pointer; display: flex; flex-direction: column; }
+  .card-carro:hover { box-shadow: 0 15px 30px rgba(0,0,0,0.1); border-color: #0066cc; transform: translateY(-3px);}
+  .card-foto { height: 180px; background: #f0f2f5; background-size: cover; background-position: center; position: relative; }
+  .badge-select { position: absolute; top: 10px; left: 10px; background: #28a745; color: #fff; padding: 5px 10px; font-size: 10px; font-weight: 800; border-radius: 4px; text-transform: uppercase; }
+  .card-info { padding: 15px; border-top: 1px solid #eee; display: flex; flex-direction: column; flex: 1; }
+  .card-info .titulo { font-size: 16px; font-weight: 800; color: #333; margin-bottom: 5px; text-transform: uppercase; }
+  .card-info .lote { font-size: 12px; color: #0066cc; font-weight: 700; margin-bottom: 15px; }
+  .card-lance { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 15px; margin-top: auto; }
+  .card-lance .label { font-size: 11px; color: #666; font-weight: 600;}
+  .card-lance .valor { font-size: 22px; font-weight: 900; color: #28a745; }
+  .btn-lance { width: 100%; padding: 12px; background: #0066cc; color: #fff; border: none; border-radius: 4px; font-weight: 800; cursor: pointer; text-transform: uppercase; transition: 0.2s;}
+  .btn-lance:hover { background: #004c99; }
+
+  .form-venda { background: #f8f9fa; border: 1px solid #ddd; padding: 30px; border-radius: 8px; max-width: 600px; margin-top: 20px; }
+  .form-venda h2 { color: #003366; margin-bottom: 20px; font-weight: 800;}
+  .form-venda input, .form-venda select { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; outline: none; font-family: 'Montserrat'; }
+  .form-venda button { width: 100%; padding: 15px; background: #28a745; color: #fff; border: none; border-radius: 4px; font-weight: 800; font-size: 16px; cursor: pointer; text-transform: uppercase;}
+
+  footer { background: #1a1a1a; color: #fff; padding: 50px 20px 20px; font-size: 13px; margin-top: 50px; font-weight: 500;}
+  .footer-grid { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; padding-bottom: 30px; border-bottom: 1px solid #333; }
+  .footer-col h4 { color: #fff; font-size: 14px; margin-bottom: 15px; text-transform: uppercase; font-weight: 800;}
+  .footer-col ul { list-style: none; }
+  .footer-col li { margin-bottom: 10px; }
+  .footer-col a { color: #999; text-decoration: none; cursor: pointer; transition: 0.2s;}
+  .footer-col a:hover { color: #ffc107; }
+  .footer-base { max-width: 1400px; margin: 20px auto 0; text-align: center; color: #666; font-size: 12px; }
+  
+  .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.8); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px);}
+  .modal-bg.on { display: flex; }
+  .modal { background: #fff; border-radius: 8px; width: 100%; max-width: 950px; max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.5);}
+  .modal-header { padding: 20px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
+  .modal-header h2 { color: #003366; font-size: 22px; font-weight: 800;}
+  .btn-fechar { background: transparent; border: none; font-size: 28px; cursor: pointer; color: #666; }
+  .modal-body { padding: 25px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+  .modal-foto { height: 350px; background: #f0f2f5; background-size: cover; background-position: center; border-radius: 8px; }
+  .modal-info h3 { font-size: 26px; color: #333; margin-bottom: 20px; text-transform: uppercase; font-weight: 900;}
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .info-linha { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 13px; font-weight: 600;}
+  .info-linha span:first-child { color: #666; }
+  .info-linha span:last-child { font-weight: 800; }
+  .bloco-lance { background: #f8f9fa; border: 1px solid #ddd; padding: 25px; border-radius: 8px; margin-top: 20px; text-align: center; }
+  .bloco-lance .label { font-size: 12px; color: #666; text-transform: uppercase; font-weight: 700;}
+  .bloco-lance .valor { font-size: 38px; font-weight: 900; color: #28a745; margin: 10px 0; }
+  .opcoes-lance { display: flex; gap: 10px; margin-top: 15px; margin-bottom: 15px; }
+  .btn-opcao { flex: 1; padding: 15px 10px; background: #fff; border: 2px solid #0066cc; color: #0066cc; border-radius: 6px; font-weight: 800; font-size: 15px; cursor: pointer; transition: .2s; }
+  .btn-opcao:hover { background: #0066cc; color: #fff; }
+  .btn-opcao.recomendado { background: #28a745; border-color: #28a745; color: #fff; }
+  .btn-login-aviso { width: 100%; padding: 15px; background: #0066cc; color: #fff; border: none; border-radius: 6px; font-weight: 800; font-size: 16px; cursor: pointer; text-transform: uppercase;}
+  .auth-modal { max-width: 400px; }
+  .auth-tabs { display: flex; border-bottom: 1px solid #ddd; }
+  .auth-tab { flex: 1; padding: 15px; text-align: center; background: #f8f9fa; cursor: pointer; font-weight: 800; color: #666; border-bottom: 3px solid transparent; }
+  .auth-tab.ativa { background: #fff; color: #003366; border-bottom-color: #003366; }
+  .auth-form { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+  .auth-form input { padding: 14px; border: 1px solid #ccc; border-radius: 6px; font-family: 'Montserrat';}
+  .auth-form button { padding: 14px; background: #003366; color: #fff; border: none; border-radius: 6px; font-weight: 800; cursor: pointer; font-family: 'Montserrat';}
+  table.agenda { width:100%; border-collapse:collapse; margin-top:20px; text-align:left; }
+  table.agenda th { background:#003366; color:#fff; padding:14px; font-weight: 700;}
+  table.agenda td { padding:14px; border-bottom:1px solid #ddd; font-weight: 500;}
+  
+  @media (max-width: 900px) { .hero { flex-direction: column; justify-content: center; height: auto; padding: 60px 20px; } .hero-cards { flex-direction: column; margin-top: 40px; width: 100%; } .hero h1 { font-size: 42px; } header { flex-wrap: wrap; padding: 15px 20px; } .busca-wrap { order: 3; min-width: 100%; margin-top: 10px; } .modal-body { grid-template-columns: 1fr; } .footer-grid { grid-template-columns: 1fr 1fr; } .layout-busca { grid-template-columns: 1fr; } .opcoes-lance { flex-direction: column; } }
+</style>
+</head>
+<body>
+
+<div class="top-bar"><div style="max-width: 1400px; margin: 0 auto; padding: 0 40px; display:flex; justify-content:flex-end; gap: 15px;"><span>BRAZIL</span> | <span>Portugues</span></div></div>
+
+<header>
+  <div class="logo" onclick="mudarTela('home')">Copart<span>.</span></div>
+  <div class="busca-wrap"><input type="text" id="buscaTopo" placeholder="Procurar por Marca, Modelo, Descricao, Chassis ou Numero do Lote" onkeypress="if(event.key === 'Enter') irParaBusca()"><button onclick="irParaBusca()">Buscar</button></div>
+  <div class="header-botoes" id="headerAuth"></div>
+</header>
+
+<div class="menu-escuro">
+  <a class="menu-item ativo" id="menu-home" onclick="mudarTela('home')">Inicio</a>
+  <a class="menu-item" onclick="mudarTela('como')">Como Funciona</a>
+  <a class="menu-item" onclick="mudarTela('busca')">Encontrar um Veiculo</a>
+  <a class="menu-item" onclick="mudarTela('leiloes')">Leiloes</a>
+  <a class="menu-item" onclick="mudarTela('locais')">Localizacoes</a>
+  <a class="menu-item" onclick="mudarTela('suporte')">Suporte</a>
+  <a class="menu-item" onclick="mudarTela('vender')">Vender Meu Carro</a>
+  <a class="menu-item" onclick="mudarTela('select')">Copart Select</a>
+  <a class="menu-item" onclick="mudarTela('pecas')">Achar Pecas</a>
+</div>
+
+<div class="banner-aviso" id="bannerAviso">Venda Seu Veiculo De Forma Segura. Acesse o link e <span>Saiba Mais...</span><span class="btn-fechar" onclick="document.getElementById('bannerAviso').style.display='none'">X</span></div>
+
+<div class="tela ativa" id="tela-home">
+  <section class="hero">
+    <div class="hero-texto">
+      <h1>Conectando <span class="laranja">compradores</span> e <b>vendedores</b> ao redor do mundo.</h1>
+      <p>Sao mais de <b>13.665 veiculos</b> disponiveis para compra online. De automoveis a caminhoes, motocicletas e muito mais.</p>
+    </div>
+    <div class="hero-cards">
+      <div class="hero-card">
+        <h3>Copart Select</h3>
+        <ul><li>Disponivel 24H horas por dia</li><li>Veiculos com laudo</li><li>Negociacao intermediada</li><li>Diversas opcoes com garantia</li></ul>
+        <div class="hero-card-botoes"><button onclick="mudarTela('select')">Comprar</button><button onclick="mudarTela('vender')">Vender</button></div>
+      </div>
+      <div class="hero-card">
+        <h3>Leilao</h3>
+        <ul><li>+ de 70 leiloes mensais</li><li>De Bancos, Seguradoras, e mais</li><li>Faca seus lances online</li><li>Veiculos com procedencia</li></ul>
+        <div class="hero-card-botoes"><button onclick="mudarTela('busca')">Comprar</button><button onclick="mudarTela('vender')">Vender</button></div>
+      </div>
+    </div>
+  </section>
+  <div class="container"><h2 class="secao-titulo">Veiculos em <b>destaque</b></h2><div class="grid-carros" id="gridDestaques"></div></div>
+</div>
+
+<div class="tela" id="tela-busca">
+  <div class="layout-busca">
+    <aside class="sidebar">
+      <div class="sidebar-header"><h2>Filtrar</h2><button class="btn-limpar" onclick="limparFiltros()">Limpar Tudo</button></div>
+      <div class="filtro-grupo"><h3>Condicao</h3><div id="filtroCondicao"></div></div>
+      <div class="filtro-grupo"><h3>Marca</h3><div id="filtroMarca"></div></div>
+      <div class="filtro-grupo"><h3>Ano</h3><div id="filtroAno"></div></div>
+    </aside>
+    <main>
+      <div class="busca-topo"><h2>Todos os Veiculos (<span id="qtdResultados">0</span>)</h2><select id="ordenacao" onchange="renderizarBusca()"><option value="recente">Mais Recentes</option><option value="menor">Menor Lance</option><option value="maior">Maior Lance</option></select></div>
+      <div class="grid-carros" id="gridBusca"></div>
+    </main>
+  </div>
+</div>
+
+<div class="tela" id="tela-vender">
+  <div class="container">
+    <h1 style="color:#003366; font-size:32px; margin-bottom:10px; font-weight:900;">Vender Meu Carro</h1>
+    <p style="font-size:16px; color:#555; margin-bottom:20px; font-weight:500;">A Copart compra veiculos de todas as condicoes: recuperaveis, sinistrados, sucatas e ate veiculos em perfeito estado.</p>
+    <div class="form-venda">
+      <h2>Preencha os dados do seu veiculo</h2>
+      <form onsubmit="enviarVenda(event)">
+        <input type="text" id="vendaNome" placeholder="Seu Nome Completo" required>
+        <input type="text" id="vendaTel" placeholder="Seu WhatsApp com DDD" required>
+        <div style="display:flex; gap:10px;"><input type="text" id="vendaMarca" placeholder="Marca (Ex: Honda)" required><input type="text" id="vendaModelo" placeholder="Modelo (Ex: Civic)" required></div>
+        <div style="display:flex; gap:10px;"><input type="number" id="vendaAno" placeholder="Ano" required><input type="text" id="vendaValor" placeholder="Quanto quer receber? (R$)" required></div>
+        <select id="vendaCondicao"><option value="Funcionando">Veiculo Funcionando</option><option value="Colisao">Colisao / Batida</option><option value="Queimado">Queimado</option><option value="Alagado">Alagado</option><option value="Sucata">Sucata / Sem Documento</option></select>
+        <button type="submit">Quero Vender Meu Carro</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="tela" id="tela-como"><div class="container"><h1>Como Funciona</h1><p>Participe dos nossos leiloes em 4 passos simples.</p><br><h3>1. Cadastre-se</h3><p>Crie sua conta gratuitamente.</p><h3>2. Encontre seu veiculo</h3><p>Use nossa busca avancada.</p><h3>3. De seu lance</h3><p>Participe do leilao ao vivo.</p><h3>4. Pague e retire</h3><p>Ganhou? Pague e retire no patio.</p></div></div>
+<div class="tela" id="tela-leiloes"><div class="container"><h1>Leiloes</h1><p>Confira a agenda de leiloes.</p><table class="agenda"><thead><tr><th>Data</th><th>Hora</th><th>Local</th><th>Acao</th></tr></thead><tbody id="tbodyLeiloes"></tbody></table></div></div>
+<div class="tela" id="tela-locais"><div class="container"><h1>Localizacoes</h1><ul style="margin-top:20px; line-height:2; font-size:16px;"><li><b>Curitiba - PR:</b> Rua das Industrias, 1000</li><li><b>Sao Paulo - SP:</b> Av. das Nacoes, 2500</li><li><b>Goiania - GO:</b> Rodovia BR-153, Km 10</li></ul></div></div>
+<div class="tela" id="tela-suporte">
+  <div class="container">
+    <h1>Suporte</h1>
+    <h3 style="margin-top:20px;">Contato</h3>
+    <p style="font-size:16px; margin-top:10px;">Email: <span id="supEmail">Carregando...</span></p>
+    <p style="font-size:16px;">Telefone: <span id="supTelefone">Carregando...</span></p>
+    <p style="font-size:16px;">Horario: <span id="supHorario">Carregando...</span></p>
+  </div>
+</div>
+<div class="tela" id="tela-select"><div class="container"><h1>Copart Select</h1><p>Compre veiculos com preco fixo e laudo garantido.</p><button class="btn-entrar" style="padding:15px 30px; font-size:16px; margin-top:10px;" onclick="mudarTela('busca')">Ver Carros Disponiveis</button></div></div>
+<div class="tela" id="tela-pecas"><div class="container"><h1>Achar Pecas</h1><p>Encontre pecas originais de veiculos recuperaveis.</p><button class="btn-entrar" style="padding:15px 30px; font-size:16px; margin-top:10px;" onclick="mudarTela('busca')">Buscar Pecas</button></div></div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-col"><h4>Sobre a Copart</h4><ul><li><a onclick="mudarTela('como')">Quem Somos</a></li><li><a onclick="mudarTela('suporte')">Trabalhe Conosco</a></li></ul></div>
+    <div class="footer-col"><h4>Ajuda e Suporte</h4><ul><li><a onclick="mudarTela('suporte')">Perguntas Frequentes</a></li><li><a onclick="mudarTela('como')">Como Dar Lances</a></li></ul></div>
+    <div class="footer-col"><h4>Legal</h4><ul><li><a onclick="mudarTela('suporte')">Termos e Condicoes</a></li><li><a onclick="mudarTela('suporte')">Politica de Privacidade</a></li></ul></div>
+    <div class="footer-col"><h4>Siga a Copart</h4><ul><li><a href="#">Facebook</a></li><li><a href="#">Instagram</a></li></ul></div>
+  </div>
+  <div class="footer-base">2026 Copart do Brasil. Todos os direitos reservados.</div>
+</footer>
+
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <div class="modal-header"><h2 id="modalTitulo">Detalhes do Veiculo</h2><button class="btn-fechar" onclick="fecharModal('modalBg')">X</button></div>
+    <div class="modal-body">
+      <div><div class="modal-foto" id="modalFoto"></div></div>
+      <div class="modal-info">
+        <h3 id="modalMarcaModelo">-</h3>
+        <div class="info-grid">
+          <div class="info-linha"><span>Lote</span><span id="modalLote">-</span></div>
+          <div class="info-linha"><span>Condicao</span><span id="modalCondicao">-</span></div>
+          <div class="info-linha"><span>Ano Fab/Mod</span><span id="modalAno">-</span></div>
+          <div class="info-linha"><span>Combustivel</span><span id="modalCombustivel">-</span></div>
+          <div class="info-linha"><span>Chassi</span><span id="modalChassi">-</span></div>
+          <div class="info-linha"><span>Patio</span><span id="modalPatio">-</span></div>
+        </div>
+        <div class="bloco-lance">
+          <div class="label">Lance Atual</div>
+          <div class="valor" id="modalLance">R$ 0,00</div>
+        </div>
+        <div id="areaLanceLogado" style="display:none;"><div class="opcoes-lance" id="opcoesLance"></div></div>
+        <div id="areaNaoLogado" style="display:none; margin-top: 20px;"><button class="btn-login-aviso" onclick="abrirAuth('login')">FACA LOGIN PARA DAR LANCE</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modalAuth">
+  <div class="modal auth-modal">
+        <div class="auth-tabs" style="position: relative;">
+      <div class="auth-tab ativa" id="tabLogin" onclick="mudarAbaAuth('login')">ENTRAR</div>
+      <div class="auth-tab" id="tabCadastro" onclick="mudarAbaAuth('cadastro')">CADASTRAR</div>
+      <button class="btn-fechar" style="position: absolute; right: 10px; top: 10px; font-size: 20px; background: transparent; border: none; cursor: pointer; color: #666; z-index: 99;" onclick="fecharModal('modalAuth')">X</button>
+    <div class="auth-form" id="formLogin"><input type="email" id="logEmail" placeholder="Seu E-mail"><input type="password" id="logSenha" placeholder="Sua Senha"><button onclick="fazerLogin()">Entrar</button></div>
+    <div class="auth-form" id="formCadastro" style="display:none;"><input type="text" id="cadNome" placeholder="Nome Completo"><input type="email" id="cadEmail" placeholder="Seu E-mail"><input type="text" id="cadCpf" placeholder="Seu CPF"><input type="text" id="cadTel" placeholder="WhatsApp com DDD"><input type="password" id="cadSenha" placeholder="Crie uma Senha"><button onclick="fazerCadastro()">Criar Conta</button></div>
+  </div>
+</div>
+
+<script>
+  let veiculos = [];
+  let veiculoAtual = null;
+  let tokenCliente = localStorage.getItem('token_cliente') || '';
+  let nomeCliente = localStorage.getItem('nome_cliente') || '';
+  let filtrosAtivos = { condicao: [], marca: [], ano: [] };
+
+  function formatarReais(v) { return 'R$ ' + parseFloat(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
+  function fecharModal(id) { document.getElementById(id).classList.remove('on'); }
+
+  async function carregarConfiguracoes() {
+    try {
+      const res = await fetch('/api/configuracoes');
+      const config = await res.json();
+      document.getElementById('supEmail').innerText = config.suporte_email || 'suporte@copart.com.br';
+      document.getElementById('supTelefone').innerText = config.suporte_telefone || '(41) 3333-4444';
+      document.getElementById('supHorario').innerText = config.suporte_horario || 'Segunda a Sexta, das 08h as 18h';
+    } catch(e) {}
+  }
+
+  async function carregarLeiloes() {
+    try {
+      const res = await fetch('/api/leiloes');
+      const leiloes = await res.json();
+      const tbody = document.getElementById('tbodyLeiloes');
+      if(leiloes.length === 0) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;">Nenhum leilao agendado no momento.</td></tr>'; return; }
+      tbody.innerHTML = leiloes.map(l => '<tr><td>' + l.data + '</td><td>' + l.hora + '</td><td>' + l.local + '</td><td><button class="btn-entrar" style="padding:5px 10px;" onclick="mudarTela(\'busca\')">Participar</button></td></tr>').join('');
+    } catch(e) {}
+  }
+
+  function mudarTela(tela) {
+    document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
+    document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('ativo'));
+    const target = document.getElementById('tela-' + tela);
+    if(target) target.classList.add('ativa');
+    const menuBtn = document.getElementById('menu-' + tela);
+    if(menuBtn) menuBtn.classList.add('ativo');
+    if(tela === 'suporte') carregarConfiguracoes();
+    if(tela === 'leiloes') carregarLeiloes();
+    window.scrollTo(0,0);
+  }
+
+  function atualizarHeader() {
+    const header = document.getElementById('headerAuth');
+    if (!header) return;
+    if (tokenCliente) {
+      let primeiroNome = nomeCliente.split(' ')[0];
+      header.innerHTML = '<span style="font-weight:bold; color:#003366; font-size:14px;">Ola, ' + primeiroNome + '</span><button class="btn-entrar" onclick="sair()">Sair</button>';
+    } else {
+      header.innerHTML = '<button class="btn-registrar" onclick="abrirAuth(\'cadastro\')">Registrar</button><button class="btn-entrar" onclick="abrirAuth(\'login\')">Entrar</button>';
+    }
+  }
+
+  function abrirAuth(aba) { document.getElementById('modalAuth').classList.add('on'); mudarAbaAuth(aba); }
+  
+  function mudarAbaAuth(aba) {
+    document.getElementById('formLogin').style.display = aba === 'login' ? 'flex' : 'none';
+    document.getElementById('formCadastro').style.display = aba === 'cadastro' ? 'flex' : 'none';
+    document.getElementById('tabLogin').classList.toggle('ativa', aba === 'login');
+    document.getElementById('tabCadastro').classList.toggle('ativa', aba === 'cadastro');
+  }
+
+  async function fazerLogin() {
+    const res = await fetch('/api/cliente/login', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ email: document.getElementById('logEmail').value, senha: document.getElementById('logSenha').value }) });
+    const data = await res.json();
+    if (res.ok) { 
+      tokenCliente = data.token; 
+      nomeCliente = data.nome; 
+      localStorage.setItem('token_cliente', tokenCliente); 
+      localStorage.setItem('nome_cliente', nomeCliente); 
+      fecharModal('modalAuth'); 
+      atualizarHeader(); 
+      alert('Bem-vindo!'); 
+    } else { alert(data.erro); }
+  }
+
+  async function fazerCadastro() {
+    const dados = { nome: document.getElementById('cadNome').value, email: document.getElementById('cadEmail').value, cpf: document.getElementById('cadCpf').value, telefone: document.getElementById('cadTel').value, senha: document.getElementById('cadSenha').value };
+    const res = await fetch('/api/cliente/cadastro', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(dados) });
+    const data = await res.json();
+    if (res.ok) { 
+      tokenCliente = data.token; 
+      nomeCliente = data.nome; 
+      localStorage.setItem('token_cliente', tokenCliente); 
+      localStorage.setItem('nome_cliente', nomeCliente); 
+      fecharModal('modalAuth'); 
+      atualizarHeader(); 
+      alert('Conta criada!'); 
+    } else { alert(data.erro); }
+  }
+
+  function sair() { localStorage.removeItem('token_cliente'); localStorage.removeItem('nome_cliente'); tokenCliente = ''; nomeCliente = ''; atualizarHeader(); }
+
+  async function enviarVenda(e) {
+    e.preventDefault();
+    const dados = { nome: document.getElementById('vendaNome').value, telefone: document.getElementById('vendaTel').value, marca: document.getElementById('vendaMarca').value, modelo: document.getElementById('vendaModelo').value, ano: document.getElementById('vendaAno').value, valor: document.getElementById('vendaValor').value, condicao: document.getElementById('vendaCondicao').value };
+    const res = await fetch('/api/vender-carro', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(dados) });
+    if (res.ok) { alert('Recebemos seus dados! Nossa equipe entrara em contato.'); e.target.reset(); mudarTela('home'); } else { alert('Erro ao enviar.'); }
+  }
+
+  function irParaBusca() { mudarTela('busca'); renderizarBusca(); }
+  
+  function renderizarFiltros() {
+    let condicoes = {}, marcas = {}, anos = {};
+    veiculos.forEach(v => { 
+      if(v.condicao) condicoes[v.condicao] = (condicoes[v.condicao] || 0) + 1; 
+      if(v.marca) marcas[v.marca] = (marcas[v.marca] || 0) + 1; 
+      if(v.ano_fab) anos[v.ano_fab] = (anos[v.ano_fab] || 0) + 1; 
+    });
+    
+    const divCond = document.getElementById('filtroCondicao');
+    if(divCond) divCond.innerHTML = Object.keys(condicoes).sort().map(c => '<label class="filtro-opcao"><input type="checkbox" value="' + c + '" onchange="toggleFiltro(\'condicao\', this.value)"> ' + c + ' <span class="count">(' + condicoes[c] + ')</span></label>').join('');
+    
+    const divMarca = document.getElementById('filtroMarca');
+    if(divMarca) divMarca.innerHTML = Object.keys(marcas).sort().map(m => '<label class="filtro-opcao"><input type="checkbox" value="' + m + '" onchange="toggleFiltro(\'marca\', this.value)"> ' + m + ' <span class="count">(' + marcas[m] + ')</span></label>').join('');
+    
+    const divAno = document.getElementById('filtroAno');
+    if(divAno) divAno.innerHTML = Object.keys(anos).sort((a,b) => b-a).map(a => '<label class="filtro-opcao"><input type="checkbox" value="' + a + '" onchange="toggleFiltro(\'ano\', this.value)"> ' + a + ' <span class="count">(' + anos[a] + ')</span></label>').join('');
+  }
+  
+  function toggleFiltro(tipo, valor) { 
+    const index = filtrosAtivos[tipo].indexOf(valor); 
+    if (index > -1) filtrosAtivos[tipo].splice(index, 1); else filtrosAtivos[tipo].push(valor); 
+    renderizarBusca(); 
+  }
+  
+  function limparFiltros() { 
+    filtrosAtivos = { condicao: [], marca: [], ano: [] }; 
+    document.querySelectorAll('.filtro-opcao input').forEach(i => i.checked = false); 
+    renderizarBusca(); 
+  }
+
+  function renderizarBusca() {
+    const inputBusca = document.getElementById('buscaTopo');
+    const termo = inputBusca ? inputBusca.value.toLowerCase() : '';
+    const selectOrdem = document.getElementById('ordenacao');
+    const ordem = selectOrdem ? selectOrdem.value : 'recente';
+    
+    let lista = veiculos.filter(v => {
+      if (filtrosAtivos.condicao.length && !filtrosAtivos.condicao.includes(v.condicao)) return false;
+      if (filtrosAtivos.marca.length && !filtrosAtivos.marca.includes(v.marca)) return false;
+      if (filtrosAtivos.ano.length && !filtrosAtivos.ano.includes(String(v.ano_fab))) return false;
+      if (termo && !v.marca.toLowerCase().includes(termo) && !v.modelo.toLowerCase().includes(termo) && !v.lote.toLowerCase().includes(termo)) return false;
+      return true;
+    });
+    
+    if (ordem === 'menor') lista.sort((a,b) => (a.lance_atual || 0) - (b.lance_atual || 0));
+    if (ordem === 'maior') lista.sort((a,b) => (b.lance_atual || 0) - (a.lance_atual || 0));
+    if (ordem === 'recente') lista.sort((a,b) => b.id - a.id);
+    
+    const qtdEl = document.getElementById('qtdResultados');
+    if(qtdEl) qtdEl.innerText = lista.length;
+    
+    const gridEl = document.getElementById('gridBusca');
+    if(gridEl) gridEl.innerHTML = lista.map(v => gerarCardHTML(v)).join('');
+  }
+
+  function gerarCardHTML(v) {
+    let badge = (v.destaque === 1 || v.destaque === true) ? '<div class="badge-select">Copart Select</div>' : '';
+    let ano = v.ano_fab || '';
+    let foto = v.foto_url || 'https://via.placeholder.com/400x200?text=Sem+Foto';
+    let valor = formatarReais(v.lance_atual || 0);
+    
+    return '<div class="card-carro" onclick="abrirModal(' + v.id + ')">' +
+      '<div class="card-foto" style="background-image: url(\'' + foto + '\')">' + badge + '</div>' +
+      '<div class="card-info">' +
+        '<div class="titulo">' + ano + ' ' + v.marca + ' ' + v.modelo + '</div>' +
+        '<div class="lote">N Lote ' + v.lote + '</div>' +
+        '<div class="card-lance">' +
+          '<div class="label">Lance Atual:</div>' +
+          '<div class="valor">' + valor + '</div>' +
+        '</div>' +
+        '<button class="btn-lance">Dar Lance</button>' +
+      '</div>' +
+    '</div>';
+  }
+
+  async function carregarVeiculos() {
+    try {
+      const res = await fetch('/api/veiculos');
+      veiculos = await res.json();
+      
+      const destaques = veiculos.filter(v => v.destaque === 1 || v.destaque === true);
+      const gridD = document.getElementById('gridDestaques');
+      if(gridD) gridD.innerHTML = destaques.map(v => gerarCardHTML(v)).join('');
+      
+      renderizarFiltros();
+      renderizarBusca();
+    } catch(e) {}
+  }
+
+  fu  function abrirModal(id) { window.location.href = '/veiculo/' + id; }
+    veiculoAtual = veiculos.find(x => x.id === id);
+    if(!veiculoAtual) return;
+    
+    document.getElementById('modalTitulo').textContent = 'LOTE ' + veiculoAtual.lote;
+    document.getElementById('modalMarcaModelo').textContent = veiculoAtual.marca + ' ' + veiculoAtual.modelo;
+    document.getElementById('modalLote').textContent = veiculoAtual.lote;
+    document.getElementById('modalAno').textContent = (veiculoAtual.ano_fab || '') + ' / ' + (veiculoAtual.ano_mod || '');
+    document.getElementById('modalCondicao').textContent = veiculoAtual.condicao || 'Nao informada';
+    document.getElementById('modalCombustivel').textContent = veiculoAtual.combustivel || 'Nao informado';
+    document.getElementById('modalChassi').textContent = veiculoAtual.chassi || 'Nao informado';
+    document.getElementById('modalPatio').textContent = veiculoAtual.patio || 'Nao informado';
+    
+    document.getElementById('modalLance').textContent = formatarReais(veiculoAtual.lance_atual || 0);
+    document.getElementById('modalFoto').style.backgroundImage = "url('" + (veiculoAtual.foto_url || 'https://via.placeholder.com/400x300') + "')";
+    
+    if (tokenCliente) {
+      document.getElementById('areaLanceLogado').style.display = 'block';
+      document.getElementById('areaNaoLogado').style.display = 'none';
+      
+      const valorBase = parseFloat(veiculoAtual.lance_atual) || 0;
+      const opcao1 = valorBase + 200;
+      const opcao2 = valorBase + 500;
+      const opcao3 = valorBase + 1000;
+      
+      document.getElementById('opcoesLance').innerHTML = 
+        '<button class="btn-opcao" onclick="darLanceDireto(' + opcao1 + ')">' + formatarReais(opcao1) + '</button>' +
+        '<button class="btn-opcao recomendado" onclick="darLanceDireto(' + opcao2 + ')">' + formatarReais(opcao2) + '</button>' +
+        '<button class="btn-opcao" onclick="darLanceDireto(' + opcao3 + ')">' + formatarReais(opcao3) + '</button>';
+    } else { 
+      document.getElementById('areaLanceLogado').style.display = 'none'; 
+      document.getElementById('areaNaoLogado').style.display = 'block'; 
+    }
+    document.getElementById('modalBg').classList.add('on');
+  }
+
+  async function darLanceDireto(valor) {
+    const baseAtual = parseFloat(veiculoAtual.lance_atual) || 0;
+    if(!valor || valor <= baseAtual) { alert('O lance deve ser maior que o atual.'); return; }
+    
+    const res = await fetch('/api/lance', { method: 'POST', headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + tokenCliente}, body: JSON.stringify({ veiculo_id: veiculoAtual.id, valor }) });
+    
+    if(res.ok) { 
+      alert('Lance enviado com sucesso!'); 
+      fecharModal('modalBg'); 
+      carregarVeiculos(); 
+    } else if (res.status === 401) {
+      sair(); 
+      fecharModal('modalBg');
+      alert('Sua sessao expirou por seguranca. Faca login novamente.');
+      abrirAuth('login');
+    } else { 
+      alert('Erro ao enviar o lance. Tente novamente.'); 
+    }
+  }
+
+  atualizarHeader();
+  carregarVeiculos();
+  carregarConfiguracoes();
+</script>
+</body>
+</html>F
