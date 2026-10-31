@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Detalhes do Veiculo | Copart Brasil</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', Arial, sans-serif; }
+  body { background: #f0f2f5; color: #333; }
+  header { background: #fff; padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #003366; position: sticky; top: 0; z-index: 100;}
+  .logo { font-size: 32px; font-weight: 900; color: #003366; font-style: italic; letter-spacing: -1.5px; cursor:pointer; }
+  .logo span { color: #0066cc; }
+  .btn-voltar { background: #003366; color: #fff; padding: 10px 20px; border: none; border-radius: 20px; font-weight: 700; cursor: pointer; text-decoration: none; font-size: 14px;}
+  
+  .container { max-width: 1400px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
+  
+  /* Galeria de Fotos */
+  .galeria-principal { background: #000; border-radius: 8px; overflow: hidden; height: 500px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; }
+  .galeria-principal img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .galeria-miniaturas { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; }
+  .galeria-miniaturas img { width: 100px; height: 75px; object-fit: cover; border-radius: 4px; cursor: pointer; opacity: 0.6; transition: 0.2s; border: 2px solid transparent;}
+  .galeria-miniaturas img:hover, .galeria-miniaturas img.ativa { opacity: 1; border-color: #0066cc; }
+  
+  /* Ficha do Veiculo */
+  .painel-info { background: #fff; border-radius: 8px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+  .painel-info h1 { color: #003366; font-size: 28px; font-weight: 900; margin-bottom: 5px; text-transform: uppercase;}
+  .painel-info h2 { color: #666; font-size: 16px; font-weight: 500; margin-bottom: 20px; }
+  
+  .tabela-dados { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+  .tabela-dados td { padding: 12px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+  .tabela-dados td:first-child { color: #666; font-weight: 500; width: 40%; }
+  .tabela-dados td:last-child { color: #003366; font-weight: 800; text-align: right; }
+  
+  /* Painel de Lance Lateral */
+  .painel-lance { background: #fff; border-radius: 8px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); height: fit-content; position: sticky; top: 100px; }
+  .tag-status { display: inline-block; background: #28a745; color: #fff; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 800; margin-bottom: 15px; text-transform: uppercase;}
+  .valor-lance { font-size: 42px; font-weight: 900; color: #28a745; margin: 10px 0; }
+  .label-lance { font-size: 13px; color: #666; font-weight: 700; text-transform: uppercase;}
+  
+  .btn-lance-principal { width: 100%; padding: 18px; background: #0066cc; color: #fff; border: none; border-radius: 8px; font-weight: 900; font-size: 18px; cursor: pointer; margin-top: 20px; text-transform: uppercase; transition: 0.2s;}
+  .btn-lance-principal:hover { background: #004c99; }
+  .btn-login-aviso { background: #ffc107; color: #003366; }
+  
+  @media (max-width: 900px) {
+    .container { grid-template-columns: 1fr; }
+    .galeria-principal { height: 300px; }
+    .painel-lance { position: static; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo" onclick="window.location.href='/'">Copart<span>.</span></div>
+  <a href="/" class="btn-voltar">Voltar para o Inicio</a>
+</header>
+
+<div class="container">
+  <!-- COLUNA ESQUERDA: FOTOS E FICHA -->
+  <div>
+    <div class="galeria-principal">
+      <img id="fotoPrincipal" src="https://via.placeholder.com/800x500?text=Carregando..." alt="Foto do Veiculo">
+    </div>
+    <div class="galeria-miniaturas" id="miniaturas">
+      <!-- As miniaturas vão aparecer aqui via JS -->
+    </div>
+
+    <div class="painel-info" style="margin-top: 20px;">
+      <h1 id="infoMarcaModelo">Carregando...</h1>
+      <h2 id="infoVersao">-</h2>
+      
+      <table class="tabela-dados">
+        <tr><td>Numero do Lote</td><td id="infoLote">-</td></tr>
+        <tr><td>Ano Fabricacao / Modelo</td><td id="infoAno">-</td></tr>
+        <tr><td>Condicao</td><td id="infoCondicao">-</td></tr>
+        <tr><td>Combustivel</td><td id="infoCombustivel">-</td></tr>
+        <tr><td>Chassi</td><td id="infoChassi">-</td></tr>
+        <tr><td>Patio</td><td id="infoPatio">-</td></tr>
+        <tr><td>Valor FIPE</td><td id="infoFipe">-</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- COLUNA DIREITA: PAINEL DE LANCE -->
+  <div class="painel-lance">
+    <div class="tag-status">Leilao Aberto</div>
+    <div class="label-lance">Lance Atual</div>
+    <div class="valor-lance" id="infoLance">R$ 0,00</div>
+    
+    <div id="areaLance"></div>
+  </div>
+</div>
+
+<script>
+  // Pega o ID do veiculo direto da URL (ex: /veiculo/5)
+  const urlParts = window.location.pathname.split('/');
+  const veiculoId = urlParts[urlParts.length - 1];
+  
+  // Pega o token do cliente logado
+  const tokenCliente = localStorage.getItem('token_cliente') || '';
+
+  function formatarReais(v) { return 'R$ ' + parseFloat(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
+
+  async function carregarDetalhes() {
+    try {
+      const res = await fetch('/api/veiculos');
+      const veiculos = await res.json();
+      const v = veiculos.find(x => x.id == veiculoId);
+      
+      if(!v) { alert('Veiculo nao encontrado!'); window.location.href='/'; return; }
+
+      // Preenche os dados da ficha
+      document.getElementById('infoMarcaModelo').textContent = v.marca + ' ' + v.modelo;
+      document.getElementById('infoVersao').textContent = v.versao || 'Versao nao informada';
+      document.getElementById('infoLote').textContent = v.lote;
+      document.getElementById('infoAno').textContent = (v.ano_fab || '') + ' / ' + (v.ano_mod || '');
+      document.getElementById('infoCondicao').textContent = v.condicao || 'Nao informada';
+      document.getElementById('infoCombustivel').textContent = v.combustivel || 'Nao informado';
+      document.getElementById('infoChassi').textContent = v.chassi || 'Nao informado';
+      document.getElementById('infoPatio').textContent = v.patio || 'Nao informado';
+      document.getElementById('infoFipe').textContent = formatarReais(v.valor_fipe || 0);
+      document.getElementById('infoLance').textContent = formatarReais(v.lance_atual || 0);
+
+      // Configura a Galeria de Fotos
+      const foto = v.foto_url || 'https://via.placeholder.com/800x500?text=Sem+Foto';
+      document.getElementById('fotoPrincipal').src = foto;
+      
+      // Como o banco so tem 1 foto por enquanto, colocamos ela 3 vezes nas miniaturas pra simular
+      const divMini = document.getElementById('miniaturas');
+      divMini.innerHTML = `
+        <img src="${foto}" class="ativa" onclick="mudarFoto(this, '${foto}')">
+        <img src="${foto}" onclick="mudarFoto(this, '${foto}')">
+        <img src="${foto}" onclick="mudarFoto(this, '${foto}')">
+      `;
+
+      // Configura os botoes de lance
+      const areaLance = document.getElementById('areaLance');
+      if (tokenCliente) {
+        const valorBase = parseFloat(v.lance_atual) || 0;
+        areaLance.innerHTML = `
+          <button class="btn-lance-principal" onclick="darLance(${v.id}, ${valorBase + 500})">Dar Lance de ${formatarReais(valorBase + 500)}</button>
+          <p style="text-align:center; font-size:12px; color:#666; margin-top:15px;">Ao dar o lance voce concorda com os Termos.</p>
+        `;
+      } else {
+        areaLance.innerHTML = `
+          <button class="btn-lance-principal btn-login-aviso" onclick="window.location.href='/'">FACA LOGIN PARA DAR LANCE</button>
+        `;
+      }
+
+    } catch(e) {
+      console.error(e);
+      alert('Erro ao carregar os dados do veiculo.');
+    }
+  }
+
+  function mudarFoto(elemento, url) {
+    document.getElementById('fotoPrincipal').src = url;
+    document.querySelectorAll('.galeria-miniaturas img').forEach(img => img.classList.remove('ativa'));
+    elemento.classList.add('ativa');
+  }
+
+  async function darLance(id, valor) {
+    const res = await fetch('/api/lance', { 
+      method: 'POST', 
+      headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + tokenCliente}, 
+      body: JSON.stringify({ veiculo_id: id, valor }) 
+    });
+    
+    if(res.ok) { 
+      alert('Lance enviado com sucesso!'); 
+      carregarDetalhes(); 
+    } else if (res.status === 401) {
+      alert('Sua sessao expirou. Faca login novamente.');
+      window.location.href = '/';
+    } else { 
+      alert('Erro ao enviar o lance.'); 
+    }
+  }
+
+  carregarDetalhes();
+</script>
+</body>
+</html>
