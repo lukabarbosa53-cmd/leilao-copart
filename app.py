@@ -7,11 +7,10 @@ from functools import wraps
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
-import pytesseract
-from PIL import Image, ImageOps
+# Configura o caminho do Tesseract no Windows
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 import re
 
-# Configura o caminho do Tesseract no Windows
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 app = Flask(__name__, static_folder='static', static_url_path='')
